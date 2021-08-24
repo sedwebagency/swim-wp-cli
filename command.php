@@ -3,6 +3,24 @@
 use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
+	// todo move the version to the "package meta" docblock
+	const VERSION = '1.0.1';
+
+	/**
+	 * A test which always gives success and the current version.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp swim test
+	 *
+	 * @subcommand test
+	 */
+	public function test( array $args = [], array $assoc_args = [] ) {
+		$current_version = self::VERSION;
+
+		WP_CLI::success( "Success. Installed version $current_version." );
+	}
+
 	/**
 	 * Make the website accessible via www.
 	 *
