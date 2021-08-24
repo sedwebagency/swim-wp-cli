@@ -172,7 +172,7 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	 */
 	public function cache_clean( array $args = [], array $assoc_args = [] ) {
 		// todo complete implementation
-		
+
 		// subcommand options
 		$options = array(
 			'return'     => true,   // Return 'STDOUT'; use 'all' for full object.
@@ -188,6 +188,42 @@ class Swim_WP_CLI extends WP_CLI_Command {
 		WP_CLI::runcommand( "cache flush", $options );
 
 		// WP_CLI::runcommand( "rocket clean --skip-themes" );
+
+		WP_CLI::success( "Done." );
+	}
+
+	/**
+	 * Autoperm
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp swim autoperm
+	 *
+	 * @subcommand autoperm
+	 */
+	public function autoperm( array $args = [], array $assoc_args = [] ) {
+		$commands = array();
+
+		$wordpress_path = ABSPATH;
+
+		$linux_user  = ltrim( '/home/', $_SERVER['home'] );
+		$linux_group = $linux_user;
+
+		if ( empty( $wordpress_path ) || empty( $linux_user ) ) {
+			WP_CLI::error( "Non riesco ad ottenere il percorso del sito o l'utente linux" );
+			exit;
+		}
+
+		// fix owner
+		$commands[] = "chown -R $linux_user:$linux_group $wordpress_path";
+
+		// fix perms
+		$commands[] = "find $wordpress_path -type d -exec chmod 755 {} \;";
+		$commands[] = "find $wordpress_path -type f -exec chmod 644 {} \;";
+
+		foreach ( $commands as $command ) {
+			WP_CLI::line( $command );
+		}
 
 		WP_CLI::success( "Done." );
 	}
