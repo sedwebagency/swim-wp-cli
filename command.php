@@ -120,7 +120,7 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	}
 
 	/**
-	 * Update all
+	 * Update core, plugins, themes and translations
 	 *
 	 * ## EXAMPLES
 	 *
@@ -162,7 +162,7 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	}
 
 	/**
-	 * Cache clean
+	 * Automatically clean all caches (wp, opcache, plugins, object-cache...)
 	 *
 	 * ## EXAMPLES
 	 *
@@ -193,7 +193,7 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	}
 
 	/**
-	 * Autoperm
+	 * Automatically apply own/perms to the root
 	 *
 	 * ## EXAMPLES
 	 *
