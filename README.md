@@ -13,7 +13,11 @@
 
 ## Installing
 
-`wp package install https://github.com/sedwebagency/swim-wp-cli/releases/latest/download/swim-wp-cli.zip`
+`sedwebagency/swim-wp-cli`
+
+## Latest release
+
+`https://github.com/sedwebagency/swim-wp-cli/releases/latest/download/swim-wp-cli.zip`
 
 ## Thanks to
 
