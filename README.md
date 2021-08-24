@@ -13,7 +13,7 @@
 
 ## Installing
 
-`sedwebagency/swim-wp-cli`
+`wp package install sedwebagency/swim-wp-cli`
 
 ## Latest release
 
