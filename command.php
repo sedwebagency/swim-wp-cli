@@ -78,7 +78,43 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	 * @subcommand to-https
 	 */
 	public function to_https( array $args = [], array $assoc_args = [] ) {
-		WP_CLI::error( "To be implemented." );
+		// todo run autoperm
+		WP_CLI::warning( "Implement autoperm here..." );
+
+		$source_domain = parse_url( get_site_url(), PHP_URL_HOST );
+		$source_domain = ltrim( $source_domain, 'www.' );
+
+		// subcommand options
+		$options = array(
+			'return'     => true,   // Return 'STDOUT'; use 'all' for full object.
+			'parse'      => 'json', // Parse captured STDOUT to JSON array.
+			'launch'     => false,  // Reuse the current process.
+			'exit_error' => true,   // Halt script execution on error.
+		);
+
+		// subcommand helpers
+		$__skip_all = '--skip-plugins --skip-themes';
+
+		// from http://source_domain...
+		$count = WP_CLI::runcommand( "search-replace 'http://$source_domain' 'https://$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
+		WP_CLI::debug( "Made $count replacements from non-www to non-www (ssl)." );
+
+		// from http://www.source_domain ...
+		WP_CLI::runcommand( "search-replace 'http://www.$source_domain' 'https://www.$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
+		WP_CLI::debug( "Made $count replacements from www to www (ssl)." );
+
+		// todo run clean-cache
+		WP_CLI::warning( "Implement cache cleanup here..." );
+
+		WP_CLI::debug( "Clean transients..." );
+		WP_CLI::runcommand( "transient delete --all $__skip_all", $options );
+
+		WP_CLI::debug( "Flush cache..." );
+		WP_CLI::runcommand( "cache flush $__skip_all", $options );
+
+		// WP_CLI::runcommand( "rocket clean --skip-themes" );
+
+		WP_CLI::success( "Done." );
 	}
 }
 
