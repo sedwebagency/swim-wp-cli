@@ -6,6 +6,11 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	/**
 	 * Make the website accessible via www.
 	 *
+	 * ## OPTIONS
+	 *
+	 * [--reverse=<bool>]
+	 * : Do to-non-www instead.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp swim to-www
@@ -13,7 +18,8 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	 * @subcommand to-www
 	 */
 	public function to_www( array $args = [], array $assoc_args = [] ) {
-		// todo run autoperm first
+		// todo run autoperm
+		WP_CLI::warning( "Implement autoperm here..." );
 
 		$source_domain = parse_url( get_site_url(), PHP_URL_HOST );
 		$source_domain = ltrim( $source_domain, 'www.' );
@@ -29,18 +35,37 @@ class Swim_WP_CLI extends WP_CLI_Command {
 		// subcommand helpers
 		$__skip_all = '--skip-plugins --skip-themes';
 
-		// avoid www.www. ...
-		WP_CLI::runcommand( "search-replace 'www.$source_domain' '$source_domain' $__skip_all --precise --all-tables-with-prefix", $options );
+		if ( isset( $assoc_args['reverse'] ) && 'true' === $assoc_args['reverse'] ) {
+			// OPERATION: www => non-www
+			$count = WP_CLI::runcommand( "search-replace 'www.$source_domain' '$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
+			WP_CLI::success( "Made $count replacements." );
+		} else {
+			// OPERATION: non-www => www
 
-		// do it
-		WP_CLI::runcommand( "search-replace '$source_domain' 'www.$source_domain' $__skip_all --precise --all-tables-with-prefix", $options );
-		WP_CLI::runcommand( "search-replace '@www.$source_domain' '@$source_domain' $__skip_all --precise --all-tables-with-prefix", $options );
+			// prepare
+			WP_CLI::debug( "Avoid multiple www (www.www.)..." );
+			WP_CLI::runcommand( "search-replace 'www.$source_domain' '$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
 
-		// clean caches
+			$count = WP_CLI::runcommand( "search-replace '$source_domain' 'www.$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
+			WP_CLI::debug( "Made $count replacements." );
+
+			// complete
+			WP_CLI::debug( "Avoid emails www (@www)..." );
+			WP_CLI::runcommand( "search-replace '@www.$source_domain' '@$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
+		}
+
 		// todo run clean-cache
+		WP_CLI::warning( "Implement cache cleanup here..." );
+
+		WP_CLI::debug( "Clean transients..." );
 		WP_CLI::runcommand( "transient delete --all $__skip_all", $options );
+
+		WP_CLI::debug( "Flush cache..." );
 		WP_CLI::runcommand( "cache flush $__skip_all", $options );
+
 		// WP_CLI::runcommand( "rocket clean --skip-themes" );
+
+		WP_CLI::success( "Done." );
 	}
 }
 
