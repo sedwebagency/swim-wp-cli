@@ -208,6 +208,7 @@ class Swim_WP_CLI extends WP_CLI_Command {
 
 		$linux_user  = ltrim( $_SERVER['home'], '/home/' );
 		$linux_group = $linux_user;
+		var_dump( $_SERVER, $_SERVER['home'], $linux_user );
 
 		if ( empty( $wordpress_path ) || empty( $linux_user ) ) {
 			WP_CLI::error( "Non riesco ad ottenere il percorso del sito o l'utente linux" );
