@@ -67,6 +67,19 @@ class Swim_WP_CLI extends WP_CLI_Command {
 
 		WP_CLI::success( "Done." );
 	}
+
+	/**
+	 * Make the website accessible via https.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp swim to-https
+	 *
+	 * @subcommand to-https
+	 */
+	public function to_https( array $args = [], array $assoc_args = [] ) {
+		WP_CLI::error( "To be implemented." );
+	}
 }
 
 WP_CLI::add_command( 'swim', 'Swim_WP_CLI' );
