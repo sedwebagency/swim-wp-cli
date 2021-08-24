@@ -222,7 +222,8 @@ class Swim_WP_CLI extends WP_CLI_Command {
 		$commands[] = "find $wordpress_path -type f -exec chmod 644 {} \;";
 
 		foreach ( $commands as $command ) {
-			WP_CLI::line( $command );
+			WP_CLI::debug( $command );
+			exec( $command );
 		}
 
 		WP_CLI::success( "Done." );
