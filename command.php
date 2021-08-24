@@ -134,6 +134,56 @@ class Swim_WP_CLI extends WP_CLI_Command {
 
 		WP_CLI::success( "Done." );
 	}
+
+	/**
+	 * Update all
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp swim update-all
+	 *
+	 * @subcommand update-all
+	 */
+	public function update_all( array $args = [], array $assoc_args = [] ) {
+		// subcommand options
+		$options = array(
+			'return'     => true,   // Return 'STDOUT'; use 'all' for full object.
+			'parse'      => 'json', // Parse captured STDOUT to JSON array.
+			'launch'     => false,  // Reuse the current process.
+			'exit_error' => true,   // Halt script execution on error.
+		);
+
+		WP_CLI::debug( "Update core..." );
+		WP_CLI::runcommand( "core update", $options );
+
+		WP_CLI::debug( "Update themes..." );
+		WP_CLI::runcommand( "theme update --all", $options );
+
+		WP_CLI::debug( "Update plugins..." );
+		WP_CLI::runcommand( "plugin update --all", $options );
+
+		WP_CLI::debug( "Update core languages..." );
+		WP_CLI::runcommand( "language core update", $options );
+
+		WP_CLI::debug( "Update themes languages..." );
+		WP_CLI::runcommand( "language theme update --all", $options );
+
+		WP_CLI::debug( "Update plugins languages..." );
+		WP_CLI::runcommand( "language plugin update --all", $options );
+
+		// todo run clean-cache
+		WP_CLI::warning( "Implement cache cleanup here..." );
+
+		WP_CLI::debug( "Clean transients..." );
+		WP_CLI::runcommand( "transient delete --all $__skip_all", $options );
+
+		WP_CLI::debug( "Flush cache..." );
+		WP_CLI::runcommand( "cache flush $__skip_all", $options );
+
+		// WP_CLI::runcommand( "rocket clean --skip-themes" );
+
+		WP_CLI::success( "Done." );
+	}
 }
 
 WP_CLI::add_command( 'swim', 'Swim_WP_CLI' );
