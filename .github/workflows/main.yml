@@ -35,5 +35,5 @@ jobs:
       - name: Upload Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: 'swim-wp-cli.zip'
+          artifacts: "swim-wp-cli.zip"
           token: ${{ secrets.GITHUB_TOKEN }}

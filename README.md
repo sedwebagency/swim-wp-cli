@@ -14,3 +14,8 @@
 ## Installing
 
 `wp package install git@github.com:sedwebagency/swim-wp-cli.git`
+
+## Thanks to
+
+- https://github.com/TheDoctor0/zip-release
+- https://github.com/ncipollo/release-action
