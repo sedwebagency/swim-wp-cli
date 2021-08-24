@@ -206,7 +206,7 @@ class Swim_WP_CLI extends WP_CLI_Command {
 
 		$wordpress_path = ABSPATH;
 
-		$linux_user  = ltrim( '/home/', $_SERVER['home'] );
+		$linux_user  = ltrim( $_SERVER['home'], '/home/' );
 		$linux_group = $linux_user;
 
 		if ( empty( $wordpress_path ) || empty( $linux_user ) ) {
