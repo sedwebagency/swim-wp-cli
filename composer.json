@@ -10,6 +10,9 @@
     "php": ">=5.6",
     "wp-cli/wp-cli": "^2.5"
   },
+  "require-dev": {
+    "johnpbloch/wordpress-core": "^5.8"
+  },
   "authors": [
     {
       "name": "SED Web",
