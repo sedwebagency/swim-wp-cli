@@ -1,0 +1,29 @@
+{
+  "name": "sedwebagency/swim-wp-cli",
+  "type": "wp-cli-package",
+  "description": "Add a `wp swim` command",
+  "keywords": [
+    "wp-cli"
+  ],
+  "homepage": "https://github.com/wp-media/wp-rocket-cli",
+  "require": {
+    "php": ">=5.6",
+    "wp-cli/wp-cli": "^2.5"
+  },
+  "authors": [
+    {
+      "name": "SED Web",
+      "homepage": "https://sedweb.com",
+      "email": "info@sedweb.com"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/sedwebagency/swim-wp-cli/issues",
+    "source": "https://github.com/sedwebagency/swim-wp-cli"
+  },
+  "autoload": {
+    "files": [
+      "swim-wp-cli.php"
+    ]
+  }
+}
