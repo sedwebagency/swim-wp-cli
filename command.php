@@ -171,23 +171,101 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	 * @subcommand cache-clean
 	 */
 	public function cache_clean( array $args = [], array $assoc_args = [] ) {
-		// todo complete implementation
+		global $wpdb;
 
-		// subcommand options
-		$options = array(
-			'return'     => true,   // Return 'STDOUT'; use 'all' for full object.
-			'parse'      => 'json', // Parse captured STDOUT to JSON array.
-			'launch'     => false,  // Reuse the current process.
-			'exit_error' => true,   // Halt script execution on error.
-		);
+		// opcache
+		if ( function_exists( 'opcache_reset' ) && ini_get( 'opcache.enable' ) ) {
+			opcache_reset();
+		}
 
-		WP_CLI::debug( "Clean transients..." );
-		WP_CLI::runcommand( "transient delete --all", $options );
+		// transients
+		$wpdb->query( "DELETE FROM $wpdb->options WHERE option_name LIKE '\_transient\_%' OR option_name LIKE '\_site\_transient\_%'" );
 
-		WP_CLI::debug( "Flush cache..." );
-		WP_CLI::runcommand( "cache flush", $options );
+		// memcached (which stores transients as well, if active)
+		wp_cache_flush();
 
-		// WP_CLI::runcommand( "rocket clean --skip-themes" );
+		// WP Rocket
+		if ( function_exists( 'rocket_clean_domain' ) ) {
+			rocket_clean_domain();
+		}
+
+		// W3 Total Cache
+		if ( function_exists( 'w3tc_flush_all' ) ) {
+			w3tc_flush_all();
+		}
+
+		// WP Super Cache
+		if ( function_exists( 'wp_cache_clear_cache' ) ) {
+			wp_cache_clear_cache();
+		}
+
+		// LiteSpeed Cache
+		if ( method_exists( 'LiteSpeed_Cache_API', 'purge_all' ) ) {
+			LiteSpeed_Cache_API::purge_all();
+		}
+
+		// Endurance
+		if ( class_exists( 'Endurance_Page_Cache' ) ) {
+			$epc = new Endurance_Page_Cache;
+			$epc->purge_all();
+		}
+
+		// WPEngine
+		if ( class_exists( 'WpeCommon' ) && method_exists( 'WpeCommon', 'purge_memcached' ) ) {
+			WpeCommon::purge_memcached();
+			WpeCommon::purge_varnish_cache();
+		}
+
+		// Siteground
+		if ( class_exists( 'SG_CachePress_Supercacher' ) && method_exists( 'SG_CachePress_Supercacher', 'purge_cache' ) ) {
+			SG_CachePress_Supercacher::purge_cache( true );
+		}
+
+		// Siteground
+		if ( class_exists( 'SiteGround_Optimizer\Supercacher\Supercacher' ) ) {
+			SiteGround_Optimizer\Supercacher\Supercacher::purge_cache();
+		}
+
+		// Cache Enabler
+		if ( class_exists( 'Cache_Enabler' ) && method_exists( 'Cache_Enabler', 'clear_total_cache' ) ) {
+			Cache_Enabler::clear_total_cache();
+		}
+
+		// Pagely
+		if ( class_exists( 'PagelyCachePurge' ) && method_exists( 'PagelyCachePurge', 'purgeAll' ) ) {
+			PagelyCachePurge::purgeAll();
+		}
+
+		// Autoptimize
+		if ( class_exists( 'autoptimizeCache' ) && method_exists( 'autoptimizeCache', 'clearall' ) ) {
+			autoptimizeCache::clearall();
+		}
+
+		// Comet cache
+		if ( class_exists( 'comet_cache' ) && method_exists( 'comet_cache', 'clear' ) ) {
+			comet_cache::clear();
+		}
+
+		// WP Fastest Cache
+		if ( function_exists( 'wpfc_clear_all_cache' ) ) {
+			wpfc_clear_all_cache( true );
+		}
+
+		// Swift
+		if ( is_callable( array( 'Swift_Performance_Cache', 'clear_all_cache' ) ) ) {
+			Swift_Performance_Cache::clear_all_cache();
+		}
+
+		// Hummingbird Cache
+		if ( is_callable( array( 'Hummingbird\WP_Hummingbird', 'flush_cache' ) ) ) {
+			Hummingbird\WP_Hummingbird::flush_cache( true, false );
+		}
+
+		// Cloudflare CDN
+		if ( class_exists( '\CF\WordPress\Hooks' ) ) {
+			$cloudflareHooks = new \CF\WordPress\Hooks();
+			$cloudflareHooks->purgeCacheEverything();
+		}
 
 		WP_CLI::success( "Done." );
 	}
