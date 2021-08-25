@@ -4,7 +4,7 @@ use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
 	// todo move the version to the "package meta" docblock
-	const VERSION = '1.3.0';
+	const VERSION = '1.3.1';
 
 	/**
 	 * A test which always gives success and the current version.
@@ -38,7 +38,7 @@ class Swim_WP_CLI extends WP_CLI_Command {
 
 		$datetime = date( 'YmdHis' );
 
-		$target_filepath = "$source_domain-$datetime.zip";
+		$target_filepath = $archive_root . "$source_domain-$datetime.zip";
 
 		// subcommand options
 		$options = array(
@@ -50,12 +50,17 @@ class Swim_WP_CLI extends WP_CLI_Command {
 
 		// db dump
 		$database_filename = "database-$datetime.sql";
-		WP_CLI::runcommand( "wp db export $database_filename", $options );
+		WP_CLI::debug( "db export $database_filename" );
+		WP_CLI::runcommand( "db export $database_filename", $options );
 
 		// create the zip archive
-		exec( "zip -r $target_filepath $archive_root -x 'wp-content/cache*'" );
+		// NB: zip -r using a dirpath will cause the structure to be kept into the zip.
+		// to avoid this issue, use pushd/popd: https://superuser.com/questions/119649/avoid-unwanted-path-in-zip-file/119661#119661
+		WP_CLI::debug( "pushd '$archive_root'; zip -r '$target_filepath' . -x 'wp-content/cache*'; popd;" );
+		exec( "pushd '$archive_root'; zip -r '$target_filepath' . -x 'wp-content/cache*'; popd;" );
 
 		// delete db dump
+		WP_CLI::debug( "unlink: $archive_root/$database_filename" );
 		@unlink( "$archive_root/$database_filename" );
 
 		WP_CLI::success( "Success. Archive $target_filepath." );
