@@ -4,7 +4,7 @@ use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
 	// todo move the version to the "package meta" docblock
-	const VERSION = '1.0.1';
+	const VERSION = '1.3.0';
 
 	/**
 	 * A test which always gives success and the current version.
