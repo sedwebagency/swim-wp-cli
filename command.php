@@ -22,6 +22,46 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	}
 
 	/**
+	 * Create a zip archive for the site, including a sql dump
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp swim archive
+	 *
+	 * @subcommand archive
+	 */
+	public function archive( array $args = [], array $assoc_args = [] ) {
+		$archive_root = ABSPATH;
+
+		$source_domain = parse_url( get_site_url(), PHP_URL_HOST );
+		$source_domain = ltrim( $source_domain, 'www.' );
+
+		$datetime = date( 'YmdHis' );
+
+		$target_filepath = "$source_domain-$datetime.zip";
+
+		// subcommand options
+		$options = array(
+			'return'     => true,   // Return 'STDOUT'; use 'all' for full object.
+			'parse'      => 'json', // Parse captured STDOUT to JSON array.
+			'launch'     => false,  // Reuse the current process.
+			'exit_error' => true,   // Halt script execution on error.
+		);
+
+		// db dump
+		$database_filename = "database-$datetime.sql";
+		WP_CLI::runcommand( "wp db export $database_filename", $options );
+
+		// create the zip archive
+		exec( "zip -r $target_filepath $archive_root -x 'wp-content/cache*'" );
+
+		// delete db dump
+		@unlink( "$archive_root/$database_filename" );
+
+		WP_CLI::success( "Success. Archive $target_filepath." );
+	}
+
+	/**
 	 * Make the website accessible via www.
 	 *
 	 * ## OPTIONS
