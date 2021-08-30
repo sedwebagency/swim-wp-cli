@@ -4,7 +4,7 @@ use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
 	// todo move the version to the "package meta" docblock
-	const VERSION = '1.3.2';
+	const VERSION = '1.3.3';
 
 	/**
 	 * A test which always gives success and the current version.
@@ -57,7 +57,7 @@ class Swim_WP_CLI extends WP_CLI_Command {
 		// NB: zip -r using a dirpath will cause the structure to be kept into the zip.
 		// to avoid this issue, use pushd/popd: https://superuser.com/questions/119649/avoid-unwanted-path-in-zip-file/119661#119661
 		WP_CLI::debug( "pushd '$archive_root'; zip -r '$target_filepath' . -x 'wp-content/cache*'; popd;" );
-		exec( "pushd '$archive_root'; zip -r '$target_filepath' . -x 'wp-content/cache*'; popd;" );
+		exec( "pushd '$archive_root'; zip -r '$target_filepath' . -x 'wp-content/cache*' -x 'wp-content/debug*'; popd;" );
 
 		// delete db dump
 		WP_CLI::debug( "unlink: $archive_root/$database_filename" );
