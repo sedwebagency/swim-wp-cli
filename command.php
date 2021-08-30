@@ -4,7 +4,7 @@ use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
 	// todo move the version to the "package meta" docblock
-	const VERSION = '1.3.1';
+	const VERSION = '1.3.2';
 
 	/**
 	 * A test which always gives success and the current version.
@@ -81,8 +81,7 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	 * @subcommand to-www
 	 */
 	public function to_www( array $args = [], array $assoc_args = [] ) {
-		// todo run autoperm
-		WP_CLI::warning( "Implement autoperm here..." );
+		self::autoperm();
 
 		$source_domain = parse_url( get_site_url(), PHP_URL_HOST );
 		$source_domain = ltrim( $source_domain, 'www.' );
@@ -138,8 +137,7 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	 * @subcommand to-https
 	 */
 	public function to_https( array $args = [], array $assoc_args = [] ) {
-		// todo run autoperm
-		WP_CLI::warning( "Implement autoperm here..." );
+		self::autoperm();
 
 		$source_domain = parse_url( get_site_url(), PHP_URL_HOST );
 		$source_domain = ltrim( $source_domain, 'www.' );
