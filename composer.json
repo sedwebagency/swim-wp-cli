@@ -5,7 +5,7 @@
   "keywords": [
     "wp-cli"
   ],
-  "homepage": "https://github.com/wp-media/wp-rocket-cli",
+  "homepage": "https://github.com/sedwebagency/swim-wp-cli",
   "require": {
     "php": ">=5.6"
   },
