@@ -126,6 +126,11 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	/**
 	 * Make the website accessible via https.
 	 *
+	 * ## OPTIONS
+	 *
+	 * [--reverse=<bool>]
+	 * : Do to-non-https instead.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     wp swim to-https
@@ -150,12 +155,19 @@ class Swim_WP_CLI extends WP_CLI_Command {
 		// subcommand helpers
 		$__skip_all = '--skip-plugins --skip-themes';
 
+		$from_protocol = 'http';
+		$dest_protocol = 'https';
+		if ( isset( $assoc_args['reverse'] ) && 'true' === $assoc_args['reverse'] ) {
+			$from_protocol = 'https';
+			$dest_protocol = 'http';
+		}
+
 		// from http://source_domain...
-		$count = WP_CLI::runcommand( "search-replace 'http://$source_domain' 'https://$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
+		$count = WP_CLI::runcommand( "search-replace '$from_protocol://$source_domain' '$dest_protocol://$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
 		WP_CLI::debug( "Made $count replacements from non-www to non-www (ssl)." );
 
 		// from http://www.source_domain ...
-		WP_CLI::runcommand( "search-replace 'http://www.$source_domain' 'https://www.$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
+		WP_CLI::runcommand( "search-replace '$from_protocol://www.$source_domain' '$dest_protocol://www.$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
 		WP_CLI::debug( "Made $count replacements from www to www (ssl)." );
 
 		WP_CLI::debug( "Cache cleanup..." );
