@@ -4,7 +4,7 @@ use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
 	// todo move the version to the "package meta" docblock
-	const VERSION = '1.3.3';
+	const VERSION = '1.3.4';
 
 	/**
 	 * A test which always gives success and the current version.
@@ -19,6 +19,62 @@ class Swim_WP_CLI extends WP_CLI_Command {
 		$current_version = self::VERSION;
 
 		WP_CLI::success( "Success. Installed version $current_version." );
+	}
+
+	/**
+	 * Clean the core install and reinstall
+	 * - known limits: will update everything
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp swim reinstall-core
+	 *
+	 * @subcommand reinstall-core
+	 */
+	public function reinstall_core( array $args = [], array $assoc_args = [] ) {
+		// subcommand options
+		$options = array(
+			'return'     => true,   // Return 'STDOUT'; use 'all' for full object.
+			'parse'      => 'json', // Parse captured STDOUT to JSON array.
+			'launch'     => false,  // Reuse the current process.
+			'exit_error' => true,   // Halt script execution on error.
+		);
+
+		// rm core folders
+		WP_CLI::debug( "rm -rf wp-includes wp-admin" );
+		exec( "rm -rf wp-includes wp-admin" );
+
+		// core download force
+		WP_CLI::debug( "wp core download --force --skip-content" );
+		WP_CLI::runcommand( "wp core download --force --skip-content", $options );
+
+		// verify checksums
+		WP_CLI::debug( "wp core verify-checksums" );
+		WP_CLI::runcommand( "wp core verify-checksums", $options );
+	}
+
+	/**
+	 * Reinstall plugins
+	 * - known limits: can't delete infected files... maybe?
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp swim reinstall-plugins
+	 *
+	 * @subcommand reinstall-plugins
+	 */
+	public function reinstall_plugins( array $args = [], array $assoc_args = [] ) {
+		// subcommand options
+		$options = array(
+			'return'     => true,   // Return 'STDOUT'; use 'all' for full object.
+			'parse'      => 'json', // Parse captured STDOUT to JSON array.
+			'launch'     => false,  // Reuse the current process.
+			'exit_error' => true,   // Halt script execution on error.
+		);
+
+		// db dump
+		WP_CLI::debug( "wp plugin install $(wp plugin list --field=name) --force" );
+		WP_CLI::runcommand( "wp plugin install $(wp plugin list --field=name) --force", $options );
 	}
 
 	/**
