@@ -4,7 +4,7 @@ use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
 	// todo move the version to the "package meta" docblock
-	const VERSION = '1.3.4';
+	const VERSION = '1.3.5';
 
 	/**
 	 * A test which always gives success and the current version.
@@ -54,6 +54,32 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	}
 
 	/**
+	 * Reinstall themes
+	 * - known limits: can't delete infected files... maybe?
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp swim reinstall-themes
+	 *
+	 * @subcommand reinstall-themes
+	 */
+	public function reinstall_themes( array $args = [], array $assoc_args = [] ) {
+		// subcommand options
+		$options = array(
+			'return'     => true,   // Return 'STDOUT'; use 'all' for full object.
+			'parse'      => 'json', // Parse captured STDOUT to JSON array.
+			'launch'     => false,  // Reuse the current process.
+			'exit_error' => true,   // Halt script execution on error.
+		);
+
+		$skip_themes_and_plugins = ' --skip-themes --skip-plugins';
+
+		// reinstall
+		WP_CLI::debug( "wp theme install $(wp theme list --field=name $skip_themes_and_plugins) --force $skip_themes_and_plugins" );
+		WP_CLI::runcommand( "wp theme install $(wp theme list --field=name $skip_themes_and_plugins) --force $skip_themes_and_plugins", $options );
+	}
+
+	/**
 	 * Reinstall plugins
 	 * - known limits: can't delete infected files... maybe?
 	 *
@@ -72,9 +98,11 @@ class Swim_WP_CLI extends WP_CLI_Command {
 			'exit_error' => true,   // Halt script execution on error.
 		);
 
-		// db dump
-		WP_CLI::debug( "wp plugin install $(wp plugin list --field=name) --force" );
-		WP_CLI::runcommand( "wp plugin install $(wp plugin list --field=name) --force", $options );
+		$skip_themes_and_plugins = ' --skip-themes --skip-plugins';
+
+		// reinstall
+		WP_CLI::debug( "wp plugin install $(wp plugin list --field=name $skip_themes_and_plugins) --force $skip_themes_and_plugins" );
+		WP_CLI::runcommand( "wp plugin install $(wp plugin list --field=name $skip_themes_and_plugins) --force $skip_themes_and_plugins", $options );
 	}
 
 	/**
