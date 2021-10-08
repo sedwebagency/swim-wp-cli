@@ -4,7 +4,7 @@ use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
 	// todo move the version to the "package meta" docblock
-	const VERSION = '1.3.5';
+	const VERSION = '1.3.6';
 
 	/**
 	 * A test which always gives success and the current version.
@@ -427,6 +427,11 @@ class Swim_WP_CLI extends WP_CLI_Command {
 		$linux_user = isset( $_SERVER['USER'] ) ? $_SERVER['USER'] : '';
 		if ( ! $linux_user && isset( $_SERVER['HOME'] ) ) {
 			$linux_user = str_replace( '/home/', '', $_SERVER['HOME'] );
+		}
+
+		// if root, use apache
+		if ( 'root' === $linux_user ) {
+			$linux_user = 'apache';
 		}
 
 		// define linux group
