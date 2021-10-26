@@ -4,7 +4,7 @@ use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
 	// todo move the version to the "package meta" docblock
-	const VERSION = '1.4.0';
+	const VERSION = '1.4.1';
 
 	/**
 	 * A test which always gives success and the current version.
@@ -185,7 +185,10 @@ class Swim_WP_CLI extends WP_CLI_Command {
 		$__skip_all = '--skip-plugins --skip-themes';
 
 		$count = WP_CLI::runcommand( "search-replace '$source_domain' '$target_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
-		WP_CLI::debug( "Made $count replacements." );
+		WP_CLI::debug( "Made $count replacements (non-www)." );
+
+		$count = WP_CLI::runcommand( "search-replace 'www.$source_domain' '$target_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
+		WP_CLI::debug( "Made $count replacements (with-www)." );
 
 		if ( isset( $assoc_args['ignore-emails'] ) && 'true' === $assoc_args['ignore-emails'] ) {
 			WP_CLI::debug( "Ignore emails..." );
