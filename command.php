@@ -4,7 +4,7 @@ use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
 	// todo move the version to the "package meta" docblock
-	const VERSION = '1.3.7';
+	const VERSION = '1.4.0';
 
 	/**
 	 * A test which always gives success and the current version.
@@ -169,6 +169,9 @@ class Swim_WP_CLI extends WP_CLI_Command {
 		$source_domain = ltrim( $source_domain, 'www.' );
 
 		$target_domain = $args[0];
+		if ( empty( $target_domain ) ) {
+			WP_CLI::error( "Can't run if no domain passed." );
+		}
 
 		// subcommand options
 		$options = array(
