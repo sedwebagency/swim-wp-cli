@@ -4,7 +4,7 @@ use function WP_CLI\Utils\make_progress_bar;
 
 class Swim_WP_CLI extends WP_CLI_Command {
 	// todo move the version to the "package meta" docblock
-	const VERSION = '1.3.6';
+	const VERSION = '1.3.7';
 
 	/**
 	 * A test which always gives success and the current version.
@@ -148,6 +148,51 @@ class Swim_WP_CLI extends WP_CLI_Command {
 		@unlink( "$archive_root/$database_filename" );
 
 		WP_CLI::success( "Success. Archive $target_filepath." );
+	}
+
+	/**
+	 * Change domain to a new one.
+	 *
+	 * ## OPTIONS
+	 *
+	 * [--ignore-emails=<bool>]
+	 * : Don't change emails domain.
+	 *
+	 * ## EXAMPLES
+	 *
+	 *     wp swim change-domain sedweb.com
+	 *
+	 * @subcommand change-domain
+	 */
+	public function change_domain( array $args = [], array $assoc_args = [] ) {
+		$source_domain = parse_url( get_site_url(), PHP_URL_HOST );
+		$source_domain = ltrim( $source_domain, 'www.' );
+
+		$target_domain = $args[0];
+
+		// subcommand options
+		$options = array(
+			'return'     => true,   // Return 'STDOUT'; use 'all' for full object.
+			'parse'      => 'json', // Parse captured STDOUT to JSON array.
+			'launch'     => false,  // Reuse the current process.
+			'exit_error' => true,   // Halt script execution on error.
+		);
+
+		// subcommand helpers
+		$__skip_all = '--skip-plugins --skip-themes';
+
+		$count = WP_CLI::runcommand( "search-replace '$source_domain' '$target_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
+		WP_CLI::debug( "Made $count replacements." );
+
+		if ( isset( $assoc_args['ignore-emails'] ) && 'true' === $assoc_args['ignore-emails'] ) {
+			WP_CLI::debug( "Ignore emails..." );
+			WP_CLI::runcommand( "search-replace '@$target_domain' '@$source_domain' $__skip_all --precise --all-tables-with-prefix --format=count", $options );
+		}
+
+		WP_CLI::debug( "Cache cleanup..." );
+		WP_CLI::runcommand( "swim cache-clean", $options );
+
+		WP_CLI::success( "Done." );
 	}
 
 	/**
