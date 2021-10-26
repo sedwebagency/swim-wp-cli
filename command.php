@@ -151,27 +151,29 @@ class Swim_WP_CLI extends WP_CLI_Command {
 	}
 
 	/**
-	 * Change domain to a new one.
+	 * Change site url to a new one.
 	 *
 	 * ## OPTIONS
 	 *
+	 * [--new=<string>]
 	 * [--ignore-emails=<bool>]
 	 * : Don't change emails domain.
 	 *
 	 * ## EXAMPLES
 	 *
-	 *     wp swim change-domain sedweb.com
+	 *     wp swim change-url sedweb.com
 	 *
-	 * @subcommand change-domain
+	 * @subcommand change-url
 	 */
-	public function change_domain( array $args = [], array $assoc_args = [] ) {
+	public function change_url( array $args = [], array $assoc_args = [] ) {
 		$source_domain = parse_url( get_site_url(), PHP_URL_HOST );
 		$source_domain = ltrim( $source_domain, 'www.' );
 
-		$target_domain = $args[0];
-		if ( empty( $target_domain ) ) {
+		if ( empty( $assoc_args['new'] ) ) {
 			WP_CLI::error( "Can't run if no domain passed." );
 		}
+
+		$target_domain = $assoc_args['new'];
 
 		// subcommand options
 		$options = array(
